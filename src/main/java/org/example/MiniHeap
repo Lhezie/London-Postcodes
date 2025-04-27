@@ -1,1 +1,97 @@
 
+package org.example.MinHeap;
+
+import java.util.ArrayList;
+
+public class MinHeap {
+    private ArrayList<HeapNode> heap;
+
+    public MinHeap() {
+        heap = new ArrayList<>();
+    }
+
+    public void insert(long encodedPostCode, String originalPostCode) {
+        HeapNode newNode = new HeapNode(encodedPostCode, originalPostCode);
+        heap.add(newNode);
+        heapifyUp(heap.size() - 1);
+    }
+
+    public boolean search(long encodedPostCode) {
+        for (HeapNode node : heap) {
+            if (node.encodedPostCode == encodedPostCode) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void delete(long encodedPostCode) {
+        int indexToRemove = -1;
+        for (int i = 0; i < heap.size(); i++) {
+            if (heap.get(i).encodedPostCode == encodedPostCode) {
+                indexToRemove = i;
+                break;
+            }
+        }
+        if (indexToRemove == -1) return;
+
+        int lastIndex = heap.size() - 1;
+        swap(indexToRemove, lastIndex);
+        heap.remove(lastIndex);
+        heapifyDown(indexToRemove);
+    }
+
+    public int count() {
+        return heap.size();
+    }
+
+    public ArrayList<String> exportPostcodes() {
+        ArrayList<String> result = new ArrayList<>();
+        for (HeapNode node : heap) {
+            result.add(node.originalPostCode);
+        }
+        result.sort(String::compareTo);
+        return result;
+    }
+
+    private void swap(int i, int j) {
+        HeapNode temp = heap.get(i);
+        heap.set(i, heap.get(j));
+        heap.set(j, temp);
+    }
+
+    private void heapifyUp(int index) {
+        while (index > 0) {
+            int parentIndex = (index - 1) / 2;
+            if (heap.get(index).encodedPostCode < heap.get(parentIndex).encodedPostCode) {
+                swap(index, parentIndex);
+                index = parentIndex;
+            } else {
+                break;
+            }
+        }
+    }
+
+    private void heapifyDown(int index) {
+        int leftChild, rightChild, minIndex;
+
+        while (index < heap.size()) {
+            leftChild = 2 * index + 1;
+            rightChild = 2 * index + 2;
+            minIndex = index;
+
+            if (leftChild < heap.size() && heap.get(leftChild).encodedPostCode < heap.get(minIndex).encodedPostCode) {
+                minIndex = leftChild;
+            }
+            if (rightChild < heap.size() && heap.get(rightChild).encodedPostCode < heap.get(minIndex).encodedPostCode) {
+                minIndex = rightChild;
+            }
+            if (minIndex != index) {
+                swap(index, minIndex);
+                index = minIndex;
+            } else {
+                break;
+            }
+        }
+    }
+}
