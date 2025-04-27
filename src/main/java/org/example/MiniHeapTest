@@ -1,1 +1,27 @@
+package org.example.MinHeap;
+
+public class MinHeapTest {
+    public static void main(String[] args) {
+        MinHeap minHeap = new MinHeap();
+
+        // Insert a few fake postcodes
+        minHeap.Insert(512345, "E1 6AN");
+        minHeap.Insert(412345, "N1 9AL");
+        minHeap.Insert(312345, "W1A 1AA");
+
+        System.out.println("Count: " + minHeap.Count()); // should print 3
+
+        System.out.println("Search 412345: " + minHeap.Search(412345)); // true
+        System.out.println("Search 999999: " + minHeap.Search(999999)); // false
+
+        minHeap.Delete(412345);
+
+        System.out.println("Count after deletion: " + minHeap.Count()); // should print 2
+
+        System.out.println("Postcodes in order:");
+        for (String postcode : minHeap.InOrder()) {
+            System.out.println(postcode);
+        }
+    }
+}
 
