@@ -1,98 +1,117 @@
-package org.example.MinHeap;
-
-import java.util.ArrayList;
-import java.util.Collections;
-
 public class MinHeap {
-    private ArrayList<HeapNode> heap;
+    private int capacity;
+    private int size;
+    private String[] heap; // Now storing postcodes as Strings
 
-    public MinHeap() {
-        heap = new ArrayList<>();
+    public MinHeap(int capacity) {
+        this.capacity = capacity;
+        this.size = 0;
+        this.heap = new String[capacity];
     }
 
-    public void Insert(long encodedPostCode, String originalPostCode) {
-        HeapNode newNode = new HeapNode(encodedPostCode, originalPostCode);
-        heap.add(newNode);
-        HeapifyUp(heap.size() - 1);
+    private int getParent(int index) {
+        return (index - 1) / 2;
     }
 
-    public boolean Search(long encodedPostCode) {
-        for (HeapNode node : heap) {
-            if (node.encodedPostCode == encodedPostCode) {
+    private int getLeftChild(int index) {
+        return 2 * index + 1;
+    }
+
+    private int getRightChild(int index) {
+        return 2 * index + 2;
+    }
+
+    private void swap(int indexOne, int indexTwo) {
+        String temp = heap[indexOne];
+        heap[indexOne] = heap[indexTwo];
+        heap[indexTwo] = temp;
+    }
+
+    public void Insert(String postcode) {
+        if (size == capacity) {
+            throw new IllegalStateException("Heap is full");
+        }
+        heap[size] = postcode;
+        int currentIndex = size;
+        size++;
+
+        while (currentIndex > 0 && heap[currentIndex].compareTo(heap[getParent(currentIndex)]) < 0) {
+            swap(currentIndex, getParent(currentIndex));
+            currentIndex = getParent(currentIndex);
+        }
+    }
+
+    private void heapifyDown(int index) {
+        int smallest = index;
+        int left = getLeftChild(index);
+        int right = getRightChild(index);
+
+        if (left < size && heap[left].compareTo(heap[smallest]) < 0) {
+            smallest = left;
+        }
+        if (right < size && heap[right].compareTo(heap[smallest]) < 0) {
+            smallest = right;
+        }
+
+        if (smallest != index) {
+            swap(index, smallest);
+            heapifyDown(smallest);
+        }
+    }
+
+    public String ExtractMinimum() {
+        if (size == 0) {
+            throw new IllegalStateException("Heap is empty");
+        }
+
+        String minValue = heap[0];
+        heap[0] = heap[size - 1];
+        size--;
+        heapifyDown(0);
+        return minValue;
+    }
+
+    public boolean Search(String postcode) {
+        for (int i = 0; i < size; i++) {
+            if (heap[i].equals(postcode)) {
                 return true;
             }
         }
         return false;
     }
 
-    public void Delete(long encodedPostCode) {
-        int indexToRemove = -1;
-        for (int i = 0; i < heap.size(); i++) {
-            if (heap.get(i).encodedPostCode == encodedPostCode) {
-                indexToRemove = i;
-                break;
-            }
-        }
-        if (indexToRemove == -1) return; // postcode not found
-
-        int lastIndex = heap.size() - 1;
-        Swap(indexToRemove, lastIndex);
-        heap.remove(lastIndex);
-        HeapifyDown(indexToRemove);
-    }
-
     public int Count() {
-        return heap.size();
+        return size;
     }
 
-    public ArrayList<String> InOrder() {
-        ArrayList<String> result = new ArrayList<>();
-        for (HeapNode node : heap) {
-            result.add(node.originalPostCode);
+    public String[] InOrder() {
+        String[] sorted = new String[size];
+        MinHeap tempHeap = new MinHeap(capacity);
+
+        // Copy all elements into a temp heap to not destroy the original
+        for (int i = 0; i < size; i++) {
+            tempHeap.Insert(heap[i]);
         }
-        Collections.sort(result); // Alphabetical order
-        return result;
-    }
 
-    private void Swap(int i, int j) {
-        HeapNode temp = heap.get(i);
-        heap.set(i, heap.get(j));
-        heap.set(j, temp);
-    }
-
-    private void HeapifyUp(int index) {
-        while (index > 0) {
-            int parentIndex = (index - 1) / 2;
-            if (heap.get(index).encodedPostCode < heap.get(parentIndex).encodedPostCode) {
-                Swap(index, parentIndex);
-                index = parentIndex;
-            } else {
-                break;
-            }
+        // Extract elements one by one to build the sorted array
+        int i = 0;
+        while (!tempHeap.isEmpty()) {
+            sorted[i++] = tempHeap.ExtractMinimum();
         }
+
+        return sorted;
     }
 
-    private void HeapifyDown(int index) {
-        int leftChild, rightChild, minIndex;
+    public boolean isEmpty() {
+        return size == 0;
+    }
 
-        while (index < heap.size()) {
-            leftChild = 2 * index + 1;
-            rightChild = 2 * index + 2;
-            minIndex = index;
-
-            if (leftChild < heap.size() && heap.get(leftChild).encodedPostCode < heap.get(minIndex).encodedPostCode) {
-                minIndex = leftChild;
-            }
-            if (rightChild < heap.size() && heap.get(rightChild).encodedPostCode < heap.get(minIndex).encodedPostCode) {
-                minIndex = rightChild;
-            }
-            if (minIndex != index) {
-                Swap(index, minIndex);
-                index = minIndex;
-            } else {
-                break;
-            }
+    public void printHeap() {
+        for (int i = 0; i < size; i++) {
+            System.out.print(heap[i] + " ");
         }
+        System.out.println();
     }
 }
+
 
