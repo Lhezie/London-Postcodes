@@ -12,19 +12,23 @@ package org.example.BinarySearchTree;
 
 public class TreeFactory {
     public static BSTree createTree(String type) {
-        if (type.equalsIgnoreCase("BST")){
+        if (type.equalsIgnoreCase("BST")) {
             return new BSTree();
         }
-        else if (type.equalsIgnoreCase(" AVL")){
-//            return new AVLTree();
+        else if (type.equalsIgnoreCase("AVL")) {
+            // return new AVLTree(); // Uncomment when AVLTree is available
+            System.out.println("AVL Tree not implemented yet. Defaulting to BST.");
+            return new BSTree();
         }
-        else if (type.equalsIgnoreCase(" MinHeap")){
-//            return new MinHeapTree();
+        else if (type.equalsIgnoreCase("MinHeap")) {
+            // return new MinHeapTree(); // Uncomment when MinHeapTree is available
+            System.out.println("MinHeap Tree not implemented yet. Defaulting to BST.");
+            return new BSTree();
         }
         else {
-            System.out.println(type + " is an Unknown Tree Type. Defaulting to BST");
-        return new BSTree();
+            System.out.println(type + " is an unknown tree type. Defaulting to BST.");
+            return new BSTree();
         }
-        return null;
     }
 }
+

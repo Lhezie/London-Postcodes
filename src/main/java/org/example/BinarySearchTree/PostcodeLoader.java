@@ -16,7 +16,7 @@ public class PostcodeLoader {
         try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
             String line;
             while ((line = br.readLine()) != null) {
-                tree.insert(line);
+                tree.insert(line); // insert handles duplication
             }
             System.out.println("Loaded postcodes from " + filename);
         } catch (IOException e) {
@@ -24,4 +24,6 @@ public class PostcodeLoader {
         }
     }
 }
+
+
 

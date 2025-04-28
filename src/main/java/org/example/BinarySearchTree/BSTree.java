@@ -11,39 +11,50 @@ import java.util.List;
 //    Then increase the count by 1 when a new postcode is added.
 
 
+
+
 public class BSTree {
     private BSTNode root;
     private int count = 0;
 
-    public void insert(String postcode) {
-        root = insertRec(root, postcode);
+    public BSTree() {
+        this.root = null;
+        this.count = 0;
     }
 
-    private BSTNode insertRec(BSTNode root, String postcode) {
-        if (root == null) {
+    public void insert(String postcode) {
+        if (!search(postcode)) {
+            root = insertRec(root, postcode);
             count++;
+            System.out.println("Postcode inserted successfully!");
+        } else {
+            System.out.println("Postcode already exists. No insertion made.");
+        }
+    }
+
+
+    private BSTNode insertRec(BSTNode node, String postcode) {
+        if (node == null) {
             return new BSTNode(postcode);
         }
-        if (postcode.compareTo(root.postcode) < 0) {
-            root.left = insertRec(root.left, postcode);
-        } else if (postcode.compareTo(root.postcode) > 0) {
-            root.right = insertRec(root.right, postcode);
-        } else {
-            System.out.println(postcode + " has already been inserted.");
+        if (postcode.compareTo(node.postcode) < 0) {
+            node.left = insertRec(node.left, postcode);
+        } else if (postcode.compareTo(node.postcode) > 0) {
+            node.right = insertRec(node.right, postcode);
         }
-        return root;
+        return node;
     }
 
     public boolean search(String postcode) {
         return searchRec(root, postcode);
     }
 
-    private boolean searchRec(BSTNode root, String postcode) {
-        if (root == null) return false;
-        if (postcode.equals(root.postcode)) return true;
-        return postcode.compareTo(root.postcode) < 0
-                ? searchRec(root.left, postcode)
-                : searchRec(root.right, postcode);
+    private boolean searchRec(BSTNode node, String postcode) {
+        if (node == null) return false;
+        if (postcode.equals(node.postcode)) return true;
+        return postcode.compareTo(node.postcode) < 0
+                ? searchRec(node.left, postcode)
+                : searchRec(node.right, postcode);
     }
 
     public boolean delete(String postcode) {
@@ -69,9 +80,9 @@ public class BSTree {
         return node;
     }
 
-    private BSTNode findMin(BSTNode root) {
-        while (root.left != null) root = root.left;
-        return root;
+    private BSTNode findMin(BSTNode node) {
+        while (node.left != null) node = node.left;
+        return node;
     }
 
     public int count() {
@@ -92,6 +103,7 @@ public class BSTree {
         }
     }
 }
+
 
 
 

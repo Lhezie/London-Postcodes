@@ -36,16 +36,17 @@ public class Benchmark {
         long endInsert = System.nanoTime();
 
         long startSearch = System.nanoTime();
-        for (int i = 0; i < Math.min(numLookups, allPostcodes.size()); i++) {
-            tree.search(allPostcodes.get(i));
+        for (int j = 0; j < Math.min(numLookups, allPostcodes.size()); j++) {
+            tree.search(allPostcodes.get(j));
         }
         long endSearch = System.nanoTime();
 
         long startDelete = System.nanoTime();
-        for (int i = 0; i < Math.min(numDeletes, allPostcodes.size()); i++) {
-            tree.delete(allPostcodes.get(i));
+        for (int k = 0; k < Math.min(numDeletes, allPostcodes.size()); k++) {
+            tree.delete(allPostcodes.get(k));
         }
         long endDelete = System.nanoTime();
+
 
         System.out.println("\n--- Benchmark Results for " + filename + " ---");
         System.out.printf("Insertion Time: %.3f ms\n", (endInsert - startInsert) / 1_000_000.0);
