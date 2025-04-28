@@ -15,7 +15,7 @@ import java.util.List;
 
 public class BSTree {
     private BSTNode root;
-    private int count = 0;
+    private int count;
 
     public BSTree() {
         this.root = null;
@@ -26,7 +26,7 @@ public class BSTree {
         if (!search(postcode)) {
             root = insertRec(root, postcode);
             count++;
-            System.out.println("Postcode inserted successfully!");
+//            System.out.println("Postcode inserted successfully!");
         } else {
             System.out.println("Postcode already exists. No insertion made.");
         }
@@ -37,11 +37,13 @@ public class BSTree {
         if (node == null) {
             return new BSTNode(postcode);
         }
-        if (postcode.compareTo(node.postcode) < 0) {
-            node.left = insertRec(node.left, postcode);
-        } else if (postcode.compareTo(node.postcode) > 0) {
+        int cmp = postcode.compareTo(node.postcode);
+        if (cmp < 0) {
+            node.left  = insertRec(node.left,  postcode);
+        } else if (cmp > 0) {
             node.right = insertRec(node.right, postcode);
         }
+        // duplicate case: do nothing
         return node;
     }
 
