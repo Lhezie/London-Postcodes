@@ -1,0 +1,44 @@
+public class MinHeapTest {
+    public static void main(String[] args) {
+        MinHeap heap = new MinHeap(5); // Start with small capacity to test dynamic expansion
+
+        // Insert some postcodes
+        System.out.println("Inserting postcodes:");
+        heap.Insert("W1A 1AA");
+        heap.Insert("E1 6AN");
+        heap.Insert("N1 9AL");
+        heap.Insert("SW1A 0AA");
+        heap.Insert("SE1 7PB");
+        heap.Insert("NW1 5DB"); // This should trigger dynamic expansion
+
+        heap.printHeap();
+
+        // Test Count()
+        System.out.println("\nNumber of postcodes in heap (Count): " + heap.Count());
+
+        // Test Search()
+        System.out.println("\nSearching for 'E1 6AN': Found at index " + heap.Search("E1 6AN"));
+        System.out.println("Searching for 'XYZ 123': Found at index " + heap.Search("XYZ 123"));
+
+        // Test ExtractMinimum()
+        System.out.println("\nExtracting minimum postcode: " + heap.ExtractMinimum());
+
+        // Print heap after extracting minimum
+        System.out.println("Heap after ExtractMinimum:");
+        heap.printHeap();
+
+        // Test InOrder()
+        System.out.println("\nPostcodes in alphabetical order (using InOrder):");
+        String[] sortedPostcodes = heap.InOrder();
+        for (String postcode : sortedPostcodes) {
+            System.out.println(postcode);
+        }
+
+        // Show number of operations done
+        System.out.println("\nOperation counts:");
+        System.out.println("Number of Inserts: " + heap.getInsertCount());
+        System.out.println("Number of Deletes: " + heap.getDeleteCount());
+        System.out.println("Number of Searches: " + heap.getSearchCount());
+    }
+}
+

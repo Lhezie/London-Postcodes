@@ -2,12 +2,12 @@ package org.example.AVLTree;
 
 public class treeNode {
 
-    int Val;
+    public String Val;
     treeNode Left;
     treeNode Right;
     treeNode Parent;
 
-    public treeNode(int value){
+    public treeNode(String value){
         this.Val = value;
     }
     public void setLeft(treeNode left){
@@ -20,13 +20,13 @@ public class treeNode {
         this.Parent = parent;
     }
 
-    treeNode getLeft(){
+    public treeNode getLeft(){
         return this.Left;
     }
-    treeNode getRight(){
+    public treeNode getRight(){
         return this.Right;
     }
-    treeNode getParent(){
+    public treeNode getParent(){
         return this.Parent;
     }
 
