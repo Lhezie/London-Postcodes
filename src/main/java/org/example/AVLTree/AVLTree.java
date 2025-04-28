@@ -4,21 +4,26 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class AVLTree {
+public class AVLTree extends Tree{
     int LeftHeight = 0;
     int RightHeight = 0;
     public treeNode root;
 
-    public AVLTree(int rootVal) {
+    public AVLTree(String rootVal) {
         root = new treeNode(rootVal);
     }
 
+    @Override
+    public int Count() {
+        return 0;
+    }
 
-    public List<Integer> ReturnSortedElements() {
-        List<Integer> SortedElements = new ArrayList<>();
+    @Override
+    public String[] InOrder() {
+        List<String> SortedElements = new ArrayList<>();
         List<treeNode> SortingStack = new ArrayList<>();
         treeNode Root = this.root;
-        int RootVal = Root.Val;
+        String RootVal = Root.Val;
         SortingStack.addFirst(Root);
 
         while (!SortingStack.isEmpty()) {
@@ -47,7 +52,12 @@ public class AVLTree {
         for(var k: SortedElements){
             System.out.print(k + ", ");
         }
-        return SortedElements;
+
+        String[] Array = new String[SortedElements.size()];
+        for (int i = 0; i < SortedElements.size(); i++) {
+            Array[i] = SortedElements.get(i);
+        }
+        return Array;
     }
 
     int DFS(treeNode root, int increment) {
@@ -81,12 +91,12 @@ public class AVLTree {
         return RightHeight - LeftHeight;
     }
 
-    public treeNode Find(int nodeValue) {
+    private treeNode FindNode(String nodeValue) {
         treeNode CurrentNode = this.root;
 
-        while (CurrentNode.Val != nodeValue) {
+        while (CurrentNode.Val.compareTo(nodeValue) != 0) {
 
-            if (nodeValue < CurrentNode.Val) {
+            if (nodeValue.compareTo(CurrentNode.Val) < 0) {
                 if (CurrentNode.getLeft() != null) {
                     CurrentNode = CurrentNode.getLeft();
                 }
@@ -94,7 +104,7 @@ public class AVLTree {
                     return CurrentNode;
                 }
             }
-            if (nodeValue > CurrentNode.Val) {
+            if (nodeValue.compareTo(CurrentNode.Val) > 0) {
                 if (CurrentNode.getRight() != null) {
                     CurrentNode = CurrentNode.getRight();
                 }
@@ -108,6 +118,14 @@ public class AVLTree {
         }
         return CurrentNode;
     }
+
+    public boolean Search(String nodeValue) {
+        if (!this.FindNode(nodeValue).Val.equals(nodeValue)) {
+            return false;
+        }
+        return true;
+    }
+
 
     public int GetHeight(treeNode root) {
 
@@ -131,10 +149,10 @@ public class AVLTree {
     }
 
 
-    public void Insert(int nodeValue) {
-        treeNode findPosition = this.Find(nodeValue);
+    public void Insert(String nodeValue) {
+        treeNode findPosition = this.FindNode(nodeValue);
         if (findPosition.Val != nodeValue) {
-            if (nodeValue < findPosition.Val) {
+            if (nodeValue.compareTo(findPosition.Val) < 0){
                 treeNode NewNode = new treeNode(nodeValue);
                 NewNode.setParent(findPosition);
                 findPosition.setLeft(NewNode);
@@ -149,9 +167,10 @@ public class AVLTree {
 
     }
 
-    public void Delete(int nodeValue) {
+    @Override
+    public boolean Delete(String nodeValue) {
 
-        treeNode findPosition = this.Find(nodeValue);
+        treeNode findPosition = this.FindNode(nodeValue);
 
         if (findPosition.Val == nodeValue) {
             treeNode parent = findPosition.getParent();
@@ -232,8 +251,10 @@ public class AVLTree {
                     }
 
                 }
+            return true;
             }
-        }
+        return false;
+    }
 
     void RightRotation(treeNode target) {
         treeNode Parent = target.getParent();
