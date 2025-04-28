@@ -4,11 +4,14 @@ public class BSTNode {
 String postcode;
 BSTNode left;
 BSTNode right;
+BSTNode parent;
 
-public BSTNode(String postcode, BSTNode left, BSTNode right) {
+public BSTNode(String postcode) {
 
     this.postcode = postcode;
-    this.left = this.right = null;
+    this.left = null;
+    this.right = null;
+    this.parent = null;
 }
 
 }
