@@ -1,27 +1,38 @@
-package org.example.MinHeap;
-
 public class MinHeapTest {
     public static void main(String[] args) {
-        MinHeap minHeap = new MinHeap();
+        MinHeap heap = new MinHeap(10); // Capacity 10
 
-        // Insert a few fake postcodes
-        minHeap.Insert(512345, "E1 6AN");
-        minHeap.Insert(412345, "N1 9AL");
-        minHeap.Insert(312345, "W1A 1AA");
+        // Insert some postcodes
+        heap.Insert("W1A 1AA");
+        heap.Insert("E1 6AN");
+        heap.Insert("N1 9AL");
+        heap.Insert("SW1A 0AA");
 
-        System.out.println("Count: " + minHeap.Count()); // should print 3
+        // Print heap contents
+        System.out.println("Heap contents:");
+        heap.printHeap();
 
-        System.out.println("Search 412345: " + minHeap.Search(412345)); // true
-        System.out.println("Search 999999: " + minHeap.Search(999999)); // false
+        // Test Count()
+        System.out.println("Number of postcodes in heap: " + heap.Count());
 
-        minHeap.Delete(412345);
+        // Test Search()
+        System.out.println("Search for E1 6AN: " + heap.Search("E1 6AN")); // Should be true
+        System.out.println("Search for SE1 7PB: " + heap.Search("SE1 7PB")); // Should be false
 
-        System.out.println("Count after deletion: " + minHeap.Count()); // should print 2
+        // Test ExtractMinimum()
+        System.out.println("Extract minimum (smallest postcode): " + heap.ExtractMinimum());
 
-        System.out.println("Postcodes in order:");
-        for (String postcode : minHeap.InOrder()) {
+        // Print heap after extracting minimum
+        System.out.println("Heap after extracting minimum:");
+        heap.printHeap();
+
+        // Test InOrder()
+        System.out.println("Postcodes in alphabetical order:");
+        String[] sortedPostcodes = heap.InOrder();
+        for (String postcode : sortedPostcodes) {
             System.out.println(postcode);
         }
     }
 }
+
 
