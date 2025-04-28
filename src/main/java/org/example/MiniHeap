@@ -1,12 +1,18 @@
 public class MinHeap {
     private int capacity;
     private int size;
-    private String[] heap; // Now storing postcodes as Strings
+    private String[] heap;
+    private int insertCount;
+    private int deleteCount;
+    private int searchCount;
 
     public MinHeap(int capacity) {
         this.capacity = capacity;
         this.size = 0;
         this.heap = new String[capacity];
+        this.insertCount = 0;
+        this.deleteCount = 0;
+        this.searchCount = 0;
     }
 
     private int getParent(int index) {
@@ -27,13 +33,24 @@ public class MinHeap {
         heap[indexTwo] = temp;
     }
 
+    private void expandCapacity() {
+        int newCapacity = capacity * 2;
+        String[] newHeap = new String[newCapacity];
+        for (int i = 0; i < size; i++) {
+            newHeap[i] = heap[i];
+        }
+        heap = newHeap;
+        capacity = newCapacity;
+    }
+
     public void Insert(String postcode) {
         if (size == capacity) {
-            throw new IllegalStateException("Heap is full");
+            expandCapacity();
         }
         heap[size] = postcode;
         int currentIndex = size;
         size++;
+        insertCount++;
 
         while (currentIndex > 0 && heap[currentIndex].compareTo(heap[getParent(currentIndex)]) < 0) {
             swap(currentIndex, getParent(currentIndex));
@@ -68,16 +85,19 @@ public class MinHeap {
         heap[0] = heap[size - 1];
         size--;
         heapifyDown(0);
+        deleteCount++;
         return minValue;
     }
 
-    public boolean Search(String postcode) {
+    public int Search(String postcode) {
         for (int i = 0; i < size; i++) {
             if (heap[i].equals(postcode)) {
-                return true;
+                searchCount++;
+                return i; // return the index if found
             }
         }
-        return false;
+        searchCount++;
+        return -1; // return -1 if not found
     }
 
     public int Count() {
@@ -111,6 +131,19 @@ public class MinHeap {
             System.out.print(heap[i] + " ");
         }
         System.out.println();
+    }
+
+    // Extra: Get number of Insert, Delete, Search operations
+    public int getInsertCount() {
+        return insertCount;
+    }
+
+    public int getDeleteCount() {
+        return deleteCount;
+    }
+
+    public int getSearchCount() {
+        return searchCount;
     }
 }
 
