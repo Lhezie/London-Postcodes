@@ -1,7 +1,10 @@
 package org.example.BinarySearchTree;
 
+import org.example.Util.PostcodeTreeInterface;
+
 import java.io.*;
 import java.util.*;
+import java.util.function.Supplier;
 
 // Algorithm:
 // 1. Open the given postcode file and read all postcodes into a list.
@@ -13,44 +16,57 @@ import java.util.*;
 
 public class Benchmark {
     public static void runBenchmark(String filename, int numLookups, int numDeletes) {
-        BSTree tree = TreeFactory.createTree("BST");
+        PostcodeTreeInterface tree = TreeFactory.createTree("BST");
 
-        List<String> allPostcodes = new ArrayList<>();
-
-        try (BufferedReader br = new BufferedReader(new FileReader(filename))) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                allPostcodes.add(line);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading file: " + e.getMessage());
-            return;
-        }
-
+        List<String> allPostcodes = loadPostcodes(filename);
         Collections.shuffle(allPostcodes);
 
-        long startInsert = System.nanoTime();
+        List<Runnable> inserts = new ArrayList<>();
+        List<Supplier<Boolean>> searches = new ArrayList<>();
+        List<Supplier<Boolean>> deletes = new ArrayList<>();
+
         for (String postcode : allPostcodes) {
-            tree.insert(postcode);
+            inserts.add(() -> tree.insert(postcode));
+            searches.add(() -> tree.search(postcode));
+            deletes.add(() -> tree.delete(postcode));
         }
-        long endInsert = System.nanoTime();
 
-        long startSearch = System.nanoTime();
-        for (int j = 0; j < Math.min(numLookups, allPostcodes.size()); j++) {
-            tree.search(allPostcodes.get(j));
+        long timeInsert = timeRunnables(inserts);
+        long timeSearch = timeSuppliers(searches, numLookups);
+        long timeDelete = timeSuppliers(deletes, numDeletes);
+
+        System.out.printf("Insert: %.3f ms, Search: %.3f ms, Delete: %.3f ms%n",
+                timeInsert/1_000_000.0,
+                timeSearch/1_000_000.0,
+                timeDelete/1_000_000.0);
+    }
+
+    private static <T> long timeSuppliers(List<Supplier<T>> ops, int limit) {
+        long start = System.nanoTime();
+        for (int i = 0; i < Math.min(limit, ops.size()); i++) {
+            ops.get(i).get();
         }
-        long endSearch = System.nanoTime();
+        return System.nanoTime() - start;
+    }
 
-        long startDelete = System.nanoTime();
-        for (int k = 0; k < Math.min(numDeletes, allPostcodes.size()); k++) {
-            tree.delete(allPostcodes.get(k));
+    private static long timeRunnables(List<Runnable> tasks) {
+        long start = System.nanoTime();
+        for (Runnable r : tasks) {
+            r.run();
         }
-        long endDelete = System.nanoTime();
+        return System.nanoTime() - start;
+    }
 
-
-        System.out.println("\n--- Benchmark Results for " + filename + " ---");
-        System.out.printf("Insertion Time: %.3f ms\n", (endInsert - startInsert) / 1_000_000.0);
-        System.out.printf("Search Time: %.3f ms\n", (endSearch - startSearch) / 1_000_000.0);
-        System.out.printf("Deletion Time: %.3f ms\n", (endDelete - startDelete) / 1_000_000.0);
+    private static List<String> loadPostcodes(String file) {
+        List<String> list = new ArrayList<>();
+        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                list.add(line);
+            }
+        } catch (IOException e) {
+            throw new UncheckedIOException(e);
+        }
+        return list;
     }
 }

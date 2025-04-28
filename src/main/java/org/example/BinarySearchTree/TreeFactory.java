@@ -10,8 +10,10 @@ package org.example.BinarySearchTree;
 //7.Default to creating and returning a BSTree object.
 //8.Return the created tree back to the caller (e.g., Main program) to be used normally.
 
+import org.example.Util.PostcodeTreeInterface;
+
 public class TreeFactory {
-    public static BSTree createTree(String type) {
+    public static PostcodeTreeInterface createTree(String type) {
         if (type.equalsIgnoreCase("BST")) {
             return new BSTree();
         }
