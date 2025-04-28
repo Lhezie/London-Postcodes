@@ -1,6 +1,7 @@
 package org.example.AVLTree;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class AVLTree {
@@ -12,58 +13,44 @@ public class AVLTree {
         root = new treeNode(rootVal);
     }
 
-    void PrintTree(){
 
-        treeNode root = this.root;
-        List<treeNode> NodeQueue = new ArrayList<>();
-        List<treeNode> Visited = new ArrayList<>();
+    public List<Integer> ReturnSortedElements() {
+        List<Integer> SortedElements = new ArrayList<>();
+        List<treeNode> SortingStack = new ArrayList<>();
+        treeNode Root = this.root;
+        int RootVal = Root.Val;
+        SortingStack.addFirst(Root);
 
-        StringBuilder Tree = new StringBuilder();
-        String leftbranchprim = "/ ";
-        String rightbranchprim = "\\";
-        String Space = " ";
-
-        NodeQueue.add(root);
-        while(!NodeQueue.isEmpty()){
-            if(root.Left != null){
-                NodeQueue.add(root.Left);
+        while (!SortingStack.isEmpty()) {
+            if(Root.Val != RootVal){
+                SortingStack.addFirst(Root);
+            }else{
+                SortedElements.add(Root.Val);
+                SortingStack.addFirst(root.getRight());
             }
-            if(root.Right != null){
-                NodeQueue.add(root.Right);
+            if (Root.getLeft() != null) {
+                Root = Root.getLeft();
+            }else if (Root.getLeft() == null) {
+                Root = SortingStack.getFirst();
+                treeNode Value = SortingStack.removeFirst();
+                SortedElements.add(Value.Val);
             }
-            Visited.add(root);
-            NodeQueue.removeFirst();
-            root = NodeQueue.getFirst();
+            if (Root.getRight() != null) {
+                Root = Root.getRight();
+            }
+            else if(Root.getRight() == null) {
+                Root = SortingStack.getFirst();
+                treeNode Value = SortingStack.removeFirst();
+                SortedElements.add(Value.Val);
+            }
         }
-        DFS(this.root, this.LeftHeight);
-
-        int MaxDepth = this.LeftHeight;
-
-        this.LeftHeight = 0;
-        int currentdepth = 0;
-
-        for(treeNode node : Visited){
-            treeNode temp = node;
-            int depth = 0;
-            while(node.getParent() != this.root || node.getParent() != null){
-                temp = temp.getParent();
-                depth ++;
-            }
-            for(int i = 0; i < MaxDepth - depth; i++){
-                Tree.append(Space);
-            }
-            Tree.append(node.Val);
-            Tree.append("\n" + leftbranchprim + rightbranchprim);
-            System.out.println(Tree);
-            Tree = new StringBuilder();
+        for(var k: SortedElements){
+            System.out.print(k + ", ");
         }
-
-
-
+        return SortedElements;
     }
 
-    void DFS(treeNode root, int increment) {
-        System.out.println(root.Val);
+    int DFS(treeNode root, int increment) {
         increment++;
         if (root.getLeft() != null) {
             DFS(root.getLeft(), increment);
@@ -72,23 +59,26 @@ public class AVLTree {
         if (root.getRight() != null) {
             DFS(root.getRight(), increment);
         }
+        return increment;
     }
 
-    int calculateBalance(treeNode root) {
+    public int calculateBalance(treeNode root) {
 
-        treeNode BranchLeft = root.getLeft();
-        treeNode BranchRight = root.getRight();
+        treeNode BranchRight;
+        treeNode BranchLeft;
+        int LeftHeight = 0;
+        int RightHeight = 0;
 
-        this.DFS(BranchLeft, this.LeftHeight);
-        this.DFS(BranchRight, this.RightHeight);
+        if(root.getLeft() != null) {
+             BranchLeft = root.getLeft();
+             LeftHeight = GetHeight(BranchLeft);
+        }
+        if(root.getRight() != null) {
+             BranchRight = root.getRight();
+             RightHeight = GetHeight(BranchRight);
+        }
 
-        int rh = this.RightHeight;
-        int lh = this.LeftHeight;
-
-        this.RightHeight = 1;
-        this.LeftHeight = 1;
-
-        return rh - lh;
+        return RightHeight - LeftHeight;
     }
 
     public treeNode Find(int nodeValue) {
@@ -119,7 +109,26 @@ public class AVLTree {
         return CurrentNode;
     }
 
+    public int GetHeight(treeNode root) {
 
+        treeNode CurrentNode = this.root;
+        int height = 0;
+
+        while (CurrentNode.getLeft() != null && CurrentNode.getRight() != null) {
+
+                if (CurrentNode.getLeft() != null) {
+                    CurrentNode = CurrentNode.getLeft();
+                    height++;
+                    continue;
+                }
+
+                if (CurrentNode.getRight() != null) {
+                    CurrentNode = CurrentNode.getRight();
+                    height++;
+                }
+            }
+        return height;
+    }
 
 
     public void Insert(int nodeValue) {
@@ -129,15 +138,13 @@ public class AVLTree {
                 treeNode NewNode = new treeNode(nodeValue);
                 NewNode.setParent(findPosition);
                 findPosition.setLeft(NewNode);
-                System.out.println(findPosition.Val);
-                System.out.println(findPosition.getLeft().Val);
+                BalanceTree(findPosition.getLeft());
             } else {
                 treeNode NewNode = new treeNode(nodeValue);
                 NewNode.setParent(findPosition);
                 findPosition.setRight(NewNode);
-                System.out.println(findPosition.Val);
-                System.out.println(findPosition.getRight().Val);
-            }// BalanceTree(findPosition);
+                BalanceTree(findPosition.getRight());
+            }
         }
 
     }
@@ -181,6 +188,7 @@ public class AVLTree {
 
                     findPosition.Val = replacement.Val;
 
+
                 }else{
                     if(findPosition.Parent.getRight() == findPosition){
                         findPosition.Parent.setRight(findPosition.getRight());
@@ -189,28 +197,31 @@ public class AVLTree {
                         findPosition.Parent.setLeft(findPosition.getRight());
                     }
                 }
-                BalanceTree(findPosition);
+
+                    BalanceTree(findPosition);
+
             } else if (findPosition.getLeft() != null || findPosition.getRight() != null) {
                 if (findPosition.getRight() == null && findPosition.getLeft() != null) {
                     if (parent.getRight() == findPosition) {
                         parent.setRight(leftBranch);
-                        System.out.println("Deleted" + " " + parent.Val + " " + leftBranch.Val);
                     }
                     if (parent.getLeft() == findPosition) {
                         parent.setLeft(leftBranch);
-                        System.out.println("Deleted" + " " + parent.Val + " " + leftBranch.Val);
                     }
+
+                    BalanceTree(parent);
+
                 }
                 if (findPosition.getLeft() == null && findPosition.getRight() != null) {
                     if (parent.getLeft() == findPosition) {
                         parent.setLeft(rightBranch);
-                        System.out.println("Deleted" + " " + parent.Val + " " + rightBranch.Val);
-                        //BalanceTree(parent);
+
                     }
                     if (parent.getRight() == findPosition) {
                         parent.setRight(rightBranch);
-                        System.out.println("Deleted" + " " + parent.Val + " " + rightBranch.Val);
                     }
+
+                    BalanceTree(parent);
                 }
             } else {
                 if (parent.getLeft() == findPosition) {
@@ -219,7 +230,7 @@ public class AVLTree {
                 if (parent.getRight() == findPosition) {
                     parent.setRight(null);
                     }
-                    //BalanceTree(parent);
+
                 }
             }
         }
@@ -264,8 +275,15 @@ public class AVLTree {
         }
     }
     void BalanceTree(treeNode root) {
-        while (root.getParent() != null) {
-            BalanceNode(root);
+        treeNode current = root;
+
+        while (current.getParent() != null ) {
+            if(calculateBalance(current) < -1 || calculateBalance(current) > 1 ) {
+                BalanceNode(root);
+            }
+            current = current.getParent();
+
+            }
         }
     }
-}
+
