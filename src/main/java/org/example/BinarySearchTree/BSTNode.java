@@ -1,17 +1,8 @@
 package org.example.BinarySearchTree;
+import org.example.AVLTree.treeNode;
 
-public class BSTNode {
-String postcode;
-BSTNode left;
-BSTNode right;
-BSTNode parent;
-
-public BSTNode(String postcode) {
-
-    this.postcode = postcode;
-    this.left = null;
-    this.right = null;
-    this.parent = null;
-}
-
+public class BSTNode extends treeNode {
+    public BSTNode(String postcode) {
+        super(postcode);
+    }
 }
