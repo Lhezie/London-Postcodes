@@ -1,4 +1,6 @@
 package org.example.BinarySearchTree;
+import org.example.AVLTree.Tree;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,88 +12,110 @@ import java.util.List;
 //    If the postcode already exists(equal), do nothing-Ignore duplicates
 //    Then increase the count by 1 when a new postcode is added.
 
+public class BSTree extends Tree {
+    private int count;
 
-public class BSTree {
-    private BSTNode root;
-    private int count = 0;
-
-    public void insert(String postcode) {
-        root = insertRec(root, postcode);
+    public BSTree() {
+        this.root = null;
+        this.count = 0;
     }
 
-    private BSTNode insertRec(BSTNode root, String postcode) {
-        if (root == null) {
+    @Override
+    public void Insert(String nodeValue) {
+        if (!Search(nodeValue)) {
+            // root is a treeNode; cast when recursing
+            root = insertRec((BSTNode) root, nodeValue);
             count++;
-            return new BSTNode(postcode);
-        }
-        if (postcode.compareTo(root.postcode) < 0) {
-            root.left = insertRec(root.left, postcode);
-        } else if (postcode.compareTo(root.postcode) > 0) {
-            root.right = insertRec(root.right, postcode);
         } else {
-            System.out.println(postcode + " has already been inserted.");
+            System.out.println(nodeValue + " already exists. No insertion made.");
         }
-        return root;
     }
 
-    public boolean search(String postcode) {
-        return searchRec(root, postcode);
+    private BSTNode insertRec(BSTNode node, String nodeValue) {
+        if (node == null) {
+            return new BSTNode(nodeValue);
+        }
+        int cmp = nodeValue.compareTo(node.postcode);
+        if (cmp < 0) {
+            node.left  = insertRec((BSTNode) node.left, nodeValue);
+        } else if (cmp > 0) {
+            node.right = insertRec((BSTNode) node.right, nodeValue);
+        }
+        // duplicate: nothing
+        return node;
     }
 
-    private boolean searchRec(BSTNode root, String postcode) {
-        if (root == null) return false;
-        if (postcode.equals(root.postcode)) return true;
-        return postcode.compareTo(root.postcode) < 0
-                ? searchRec(root.left, postcode)
-                : searchRec(root.right, postcode);
+    @Override
+    public boolean Search(String nodeValue) {
+        return searchRec((BSTNode) root, nodeValue);
     }
 
-    public boolean delete(String postcode) {
+    private boolean searchRec(BSTNode node, String nodeValue) {
+        if (node == null) return false;
+        if (nodeValue.equals(node.postcode)) return true;
+        if (nodeValue.compareTo(node.postcode) < 0) {
+            return searchRec((BSTNode) node.left, nodeValue);
+        } else {
+            return searchRec((BSTNode) node.right, nodeValue);
+        }
+    }
+
+    @Override
+    public boolean Delete(String nodeValue) {
         int before = count;
-        root = deleteRec(root, postcode);
+        root = deleteRec((BSTNode) root, nodeValue);
         return count < before;
     }
 
-    private BSTNode deleteRec(BSTNode node, String postcode) {
+    private BSTNode deleteRec(BSTNode node, String nodeValue) {
         if (node == null) return null;
-        if (postcode.compareTo(node.postcode) < 0) {
-            node.left = deleteRec(node.left, postcode);
-        } else if (postcode.compareTo(node.postcode) > 0) {
-            node.right = deleteRec(node.right, postcode);
+        int cmp = nodeValue.compareTo(node.postcode);
+        if (cmp < 0) {
+            node.left = deleteRec((BSTNode) node.left, nodeValue);
+        } else if (cmp > 0) {
+            node.right = deleteRec((BSTNode) node.right, nodeValue);
         } else {
             count--;
-            if (node.left == null) return node.right;
-            if (node.right == null) return node.left;
-            BSTNode successor = findMin(node.right);
+            if (node.left == null)  return (BSTNode) node.right;
+            if (node.right == null) return (BSTNode) node.left;
+            BSTNode successor = findMin((BSTNode) node.right);
             node.postcode = successor.postcode;
-            node.right = deleteRec(node.right, successor.postcode);
+            node.right = deleteRec((BSTNode) node.right, successor.postcode);
         }
         return node;
     }
 
-    private BSTNode findMin(BSTNode root) {
-        while (root.left != null) root = root.left;
-        return root;
+    private BSTNode findMin(BSTNode node) {
+        while (node.left != null) {
+            node = (BSTNode) node.left;
+        }
+        return node;
     }
 
-    public int count() {
-        return count;
-    }
-
-    public String[] inOrder() {
+    @Override
+    public String[] InOrder() {
         List<String> result = new ArrayList<>();
-        inOrderRec(root, result);
+        inOrderRec((BSTNode) root, result);
         return result.toArray(new String[0]);
     }
 
     private void inOrderRec(BSTNode node, List<String> result) {
-        if (node != null) {
-            inOrderRec(node.left, result);
-            result.add(node.postcode);
-            inOrderRec(node.right, result);
-        }
+        if (node == null) return;
+        inOrderRec((BSTNode) node.left, result);
+        result.add(node.postcode);
+        inOrderRec((BSTNode) node.right, result);
     }
+
+    @Override
+    public int Count() {
+        return count;
+    }
+
+    // convenience wrappers so old code that calls lower-case methods still works
+    public void insert(String v)     { Insert(v); }
+    public boolean search(String v)  { return Search(v); }
+    public boolean delete(String v)  { return Delete(v); }
+    public String[] inOrder()        { return InOrder(); }
+    public int count()               { return Count(); }
 }
-
-
 
